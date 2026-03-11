@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Star, BookOpen, Mail, Globe, Github, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, Star, BookOpen, Mail, Globe, Github, Send, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams, Link } from "react-router";
 import { getTranslations, type Language } from "@/i18n";
@@ -9,13 +9,11 @@ import GuideContent from "./GuideContent";
 const TAB_ICONS: Record<string, React.FC<{ className?: string }>> = {
   guide: BookOpen,
   contact: Mail,
-  lang: Globe,
 };
 
 const TABS = [
   { id: "guide", label: "GUIDE" },
   { id: "contact", label: "CONTACT" },
-  { id: "lang", label: "EN / 中" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -46,127 +44,181 @@ const pageFlipVariants = {
   },
 };
 
-/* ── Language Page — Dictionary Index ── */
-const LangContent = ({ lang }: { lang: Language }) => {
-  const t = getTranslations(lang).langPanel;
+
+
+/* ── Social platform SVG icons ── */
+const DouyinIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 6h3.18a10 10 0 0 0 9.82 8v6a16 16 0 0 1-9.82-3.36V30a10 10 0 1 1-7-9.54V27a4 4 0 1 0 3.82 4V6z" />
+  </svg>
+);
+
+const XiaohongshuIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="8" y="6" width="32" height="36" rx="4" />
+    <path d="M18 18l6 8 6-8" />
+    <line x1="24" y1="26" x2="24" y2="34" />
+  </svg>
+);
+
+const WechatVideoIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="8" width="40" height="32" rx="4" />
+    <polygon points="20,16 34,24 20,32" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+const BilibiliIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 8l5 6h10l5-6" />
+    <rect x="8" y="14" width="32" height="24" rx="4" />
+    <circle cx="19" cy="26" r="2" fill="currentColor" />
+    <circle cx="29" cy="26" r="2" fill="currentColor" />
+  </svg>
+);
+
+const ShareIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+  </svg>
+);
+
+const SOCIAL_PLATFORMS = [
+  { icon: DouyinIcon, key: "douyin" as const, url: "#" },
+  { icon: XiaohongshuIcon, key: "xiaohongshu" as const, url: "#" },
+  { icon: WechatVideoIcon, key: "wechatVideo" as const, url: "#" },
+  { icon: BilibiliIcon, key: "bilibili" as const, url: "#" },
+];
+
+/* ── Contact Page — The Imprint ── */
+const ContactContent = ({ lang }: { lang: Language }) => {
+  const [socialOpen, setSocialOpen] = useState(false);
+  const t = getTranslations(lang).contact;
 
   return (
-    <div className="p-8 md:p-12 h-full flex flex-col relative overflow-hidden">
-      {/* Decorative book elements */}
-      <div className="absolute top-12 right-12 w-24 h-24 border-[1px] border-foreground/10 rounded-full flex items-center justify-center opacity-50">
-        <Globe className="w-8 h-8 text-muted-foreground/30 stroke-[1px]" />
+    <div className="p-6 space-y-6 h-full flex flex-col">
+      <p className="font-mono text-[11px] text-muted-foreground tracking-[0.2em] uppercase">{t.sectionLabel}</p>
+      <div className="space-y-4">
+        <h2 className="text-3xl md:text-[2.25rem] font-bold leading-snug tracking-tight text-foreground/90">
+          {t.heading1}
+          {lang === 'zh' ? (
+            <span className="text-highlight italic underline decoration-highlight decoration-[3px] underline-offset-[6px] decoration-dashed mx-1">
+              {t.headingHighlight}
+            </span>
+          ) : (
+            <span className="text-highlight italic mx-2.5">
+              {t.headingHighlight}
+            </span>
+          )}
+          {t.heading2}
+        </h2>
+        <p className="text-muted-foreground text-sm leading-relaxed max-w-[280px]">
+          {t.description}
+        </p>
       </div>
 
-      <p className="font-mono text-[11px] text-muted-foreground tracking-[0.2em] uppercase mb-12">{t.edition}</p>
+      {/* Brutalist stamps — staggered flow layout */}
+      <div className="flex-1 flex flex-col mt-4" style={{ gap: "6px" }}>
+        {/* 1. Submit a Skill — orange */}
+        <a
+          href="https://github.com/akiru6/skillsbook-remix/issues/new?template=submit-skill.yml"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rotate-[-2deg] border-[3px] border-foreground bg-highlight text-accent-foreground shadow-[5px_5px_0px_hsl(var(--border))] px-5 py-3.5 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[92%]"
+        >
+          <Send className="w-5 h-5 shrink-0" />
+          <span className="text-lg">{t.submitSkill}</span>
+          <ArrowRight className="w-4 h-4 ml-auto" />
+        </a>
 
-      <div className="max-w-md mt-4 relative z-10">
-        <h3 className="text-2xl font-bold tracking-tight mb-10">{t.preferences}</h3>
+        {/* 2. Email — lavender */}
+        <a
+          href={`mailto:${t.emailAddress}`}
+          className="rotate-[1.5deg] ml-3 border-[3px] border-foreground bg-[hsl(var(--macaron-lavender))] shadow-[5px_5px_0px_hsl(var(--border))] px-5 py-3.5 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[88%]"
+        >
+          <Mail className="w-5 h-5 shrink-0" />
+          <span className="text-lg">{t.email}</span>
+          <span className="ml-auto text-xs opacity-60">{t.emailAddress}</span>
+        </a>
 
-        <div className="flex flex-col gap-8">
-          {/* Active: English */}
-          <Link
-            to="?lang=en"
-            preventScrollReset
-            className={`group relative w-full text-left transition-all block ${lang === 'en' ? '' : 'opacity-60 hover:opacity-100 hover:-translate-y-[1px]'}`}
+        {/* 3. Social Media — accordion with page-tab flip animation */}
+        <div className="rotate-[-1deg] ml-1" style={{ perspective: "800px" }}>
+          {/* Main Social Media button */}
+          <button
+            onClick={() => setSocialOpen((prev) => !prev)}
+            className="relative z-10 border-[3px] border-foreground bg-[hsl(var(--macaron-sky))] shadow-[5px_5px_0px_hsl(var(--border))] px-5 py-3.5 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[90%]"
           >
-            {lang === 'en' ? (
-              <div className="absolute -inset-x-5 -inset-y-4 border-[3px] border-foreground bg-highlight shadow-[5px_5px_0px_hsl(var(--border))] z-0" />
-            ) : (
-              <div className="absolute -inset-x-5 -inset-y-4 border-[2px] border-dashed border-foreground/30 bg-card group-hover:border-solid group-hover:border-[3px] group-hover:border-foreground group-hover:bg-highlight/20 transition-all z-0" />
-            )}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className={`text-4xl font-bold tracking-tighter ${lang === 'en' ? 'text-accent-foreground' : 'text-muted-foreground group-hover:text-foreground'}`}>En</span>
-                <span className={`font-mono text-sm font-bold ${lang === 'en' ? 'text-accent-foreground' : 'text-muted-foreground group-hover:text-foreground'}`}>{t.enDefault}</span>
-              </div>
-              {lang === 'en' ? (
-                <span className="font-mono text-[10px] bg-foreground text-background px-2.5 py-1 font-bold tracking-widest leading-none">{t.active}</span>
-              ) : (
-                <span className="font-mono text-[10px] border-[1.5px] border-foreground/30 text-foreground/50 px-2 py-0.5 font-bold tracking-widest group-hover:border-foreground group-hover:text-foreground transition-colors leading-none">{t.switch}</span>
-              )}
-            </div>
-          </Link>
+            <ShareIcon className="w-5 h-5 shrink-0" />
+            <span className="text-lg">{t.socialMedia}</span>
+            <motion.span
+              animate={{ rotate: socialOpen ? 180 : 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="ml-auto"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </motion.span>
+          </button>
 
-          {/* Inactive: Chinese */}
-          <Link
-            to="?lang=zh"
-            preventScrollReset
-            className={`group relative w-full text-left mt-2 transition-all block ${lang === 'zh' ? '' : 'opacity-60 hover:opacity-100 hover:-translate-y-[1px]'}`}
-          >
-            {lang === 'zh' ? (
-              <div className="absolute -inset-x-5 -inset-y-4 border-[3px] border-foreground bg-[hsl(var(--macaron-peach))] shadow-[5px_5px_0px_hsl(var(--border))] z-0" />
-            ) : (
-              <div className="absolute -inset-x-5 -inset-y-4 border-[2px] border-dashed border-foreground/30 bg-card group-hover:border-solid group-hover:border-[3px] group-hover:border-foreground group-hover:bg-[hsl(var(--macaron-peach))]/20 transition-all z-0" />
+          {/* Expanded platform list — connected to parent via left border */}
+          <AnimatePresence>
+            {socialOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 28 }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-col gap-[5px] pt-1.5 ml-3 pl-3 border-l-[3px] border-foreground/20">
+                  {SOCIAL_PLATFORMS.map((p, i) => {
+                    const Icon = p.icon;
+                    const tabColors = [
+                      "bg-[hsl(var(--macaron-peach))]",
+                      "bg-[hsl(var(--macaron-mint))]",
+                      "bg-[hsl(var(--macaron-yellow))]",
+                      "bg-[hsl(var(--macaron-lavender))]",
+                    ];
+                    return (
+                      <motion.a
+                        key={p.key}
+                        href={p.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        initial={{ rotateX: -90, opacity: 0 }}
+                        animate={{ rotateX: 0, opacity: 1 }}
+                        exit={{ rotateX: -90, opacity: 0 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 200,
+                          damping: 18,
+                          delay: i * 0.06,
+                        }}
+                        style={{ transformOrigin: "top center" }}
+                        className={`${tabColors[i]} border-[2px] border-foreground shadow-[3px_3px_0px_hsl(var(--border))] px-4 py-2 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-0.5 hover:shadow-[3px_4px_0px_hsl(var(--border))] transition-all cursor-pointer`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span className="text-[13px]">{t.platforms[p.key]}</span>
+                        <span className="ml-auto text-[11px] opacity-50 font-medium">{t.handles[p.key]}</span>
+                      </motion.a>
+                    );
+                  })}
+                </div>
+              </motion.div>
             )}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <span className={`text-4xl font-bold tracking-tighter ${lang === 'zh' ? 'text-foreground' : 'text-muted-foreground group-hover:text-[hsl(var(--macaron-coral))] transition-colors'}`}>中</span>
-                <span className={`font-mono text-sm font-bold ${lang === 'zh' ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`}>{t.zhWip}</span>
-              </div>
-              {lang === 'zh' ? (
-                <span className="font-mono text-[10px] bg-foreground text-background px-2.5 py-1 font-bold tracking-widest leading-none">{t.active}</span>
-              ) : (
-                <span className="font-mono text-[10px] border-[1.5px] border-foreground/30 text-foreground/50 px-2 py-0.5 font-bold tracking-widest group-hover:border-foreground group-hover:text-foreground transition-colors leading-none">{t.switch}</span>
-              )}
-            </div>
-          </Link>
-        </div>
-
-        <div className="mt-16 pt-8 border-t-[2px] border-dotted border-border/50">
-          <p className="font-mono text-[11px] text-muted-foreground leading-relaxed md:pr-10">
-            {t.disclaimer}
-          </p>
+          </AnimatePresence>
         </div>
       </div>
     </div>
   );
 };
 
-/* ── Contact Page — The Imprint ── */
-const ContactContent = () => (
-  <div className="p-6 space-y-6 h-full flex flex-col">
-    <p className="font-mono text-[11px] text-muted-foreground tracking-[0.2em] uppercase">§ The Imprint</p>
-    <h2 className="text-4xl md:text-5xl font-bold leading-[1.05] tracking-tight">
-      Want to<br />
-      <span className="text-highlight italic">contribute</span><br />
-      a skill?
-    </h2>
-    <p className="text-muted-foreground text-sm max-w-xs">
-      Join our community of solopreneurs building accounting automations together.
-    </p>
-
-    {/* Staggered brutalist stamps */}
-    <div className="flex-1 relative mt-4">
-      <a
-        href="#"
-        className="absolute top-0 left-0 rotate-[-2deg] border-[3px] border-foreground bg-highlight text-accent-foreground shadow-[5px_5px_0px_hsl(var(--border))] px-6 py-4 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[85%]"
-      >
-        <Send className="w-5 h-5 shrink-0" />
-        <span className="text-lg">Submit a Skill</span>
-        <ArrowRight className="w-4 h-4 ml-auto" />
-      </a>
-      <a
-        href="#"
-        className="absolute top-[72px] left-[12px] rotate-[1.5deg] border-[3px] border-foreground bg-[hsl(var(--macaron-lavender))] shadow-[5px_5px_0px_hsl(var(--border))] px-6 py-4 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[80%]"
-      >
-        <Github className="w-5 h-5 shrink-0" />
-        <span className="text-lg">GitHub Discussions</span>
-      </a>
-      <a
-        href="#"
-        className="absolute top-[144px] left-[4px] rotate-[-1deg] border-[3px] border-foreground bg-[hsl(var(--macaron-sky))] shadow-[5px_5px_0px_hsl(var(--border))] px-6 py-4 font-mono text-sm font-bold flex items-center gap-3 hover:-translate-y-1 hover:shadow-[5px_7px_0px_hsl(var(--border))] transition-all w-[75%]"
-      >
-        <MessageCircle className="w-5 h-5 shrink-0" />
-        <span className="text-lg">Discord Community</span>
-      </a>
-    </div>
-  </div>
-);
-
 const CONTENT_MAP: Record<TabId, React.FC<any>> = {
   guide: GuideContent,
   contact: ContactContent,
-  lang: LangContent,
 };
 
 export default function HeroSection() {
@@ -185,8 +237,8 @@ export default function HeroSection() {
     <section className="min-h-screen flex items-center justify-center px-4 md:px-6 py-10 md:py-16">
       <div className="max-w-6xl w-full flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch">
         {/* Left Card + Book Tabs */}
-        <div className="flex flex-col md:flex-row flex-1 max-w-xl w-full">
-          <div className="border-brutalist shadow-brutalist-lg bg-card p-6 md:p-12 flex-1 flex flex-col">
+        <div className="flex flex-col md:flex-row flex-1 max-w-xl w-full relative z-10">
+          <div className="border-brutalist shadow-brutalist-lg bg-card p-6 md:p-12 flex-1 flex flex-col pt-10 md:pt-14 relative z-10">
             {lang === 'en' ? (
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight">
                 {t.titleBase}{" "}
@@ -197,19 +249,19 @@ export default function HeroSection() {
                 <span className="underline decoration-highlight decoration-4 underline-offset-4 whitespace-nowrap">{t.titleUnderline}</span>
               </h1>
             ) : (
-              <h1 className="flex flex-col items-start gap-[8px] md:gap-[12px]">
-                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4rem] font-bold tracking-tight text-foreground/90 whitespace-nowrap leading-none">{t.titleBaseLine1}</span>
-                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4rem] font-bold tracking-tight text-foreground/90 whitespace-nowrap leading-none">{t.titleBaseLine2}</span>
+              <h1 className="flex flex-col items-start gap-[4px] md:gap-[12px]">
+                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4.0rem] font-bold tracking-tight text-foreground/90 whitespace-nowrap leading-none">{t.titleBaseLine1}</span>
+                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4.0rem] font-bold tracking-tight text-foreground/90 whitespace-nowrap leading-none">{t.titleBaseLine2}</span>
                 <span className="text-[2.25rem] md:text-[2.75rem] lg:text-[3.8rem] font-black italic text-highlight underline decoration-highlight decoration-4 underline-offset-[12px] decoration-dashed whitespace-nowrap leading-tight">{t.titleHighlight}</span>
-                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4rem] font-black text-foreground underline decoration-foreground decoration-[5px] underline-offset-8 whitespace-nowrap leading-none">{t.titleUnderline}</span>
+                <span className="text-[2.75rem] md:text-[2.75rem] lg:text-[4.0rem] font-black text-foreground underline decoration-foreground decoration-[5px] underline-offset-8 whitespace-nowrap leading-none">{t.titleUnderline}</span>
               </h1>
             )}
 
-            <p className="mt-6 text-muted-foreground text-lg leading-relaxed max-w-md">
+            <p className={`${lang === 'zh' ? 'mt-10 md:mt-9' : 'mt-8'} text-muted-foreground text-lg leading-relaxed max-w-md transition-all`}>
               {t.description}
             </p>
 
-            <div className="flex flex-wrap gap-3 mt-8">
+            <div className={`flex flex-wrap gap-3 ${lang === 'zh' ? 'mt-9' : 'mt-8'} transition-all`}>
               <a
                 href="#skills"
                 className="border-brutalist shadow-brutalist bg-highlight text-accent-foreground px-6 py-3 font-mono text-sm font-bold flex items-center gap-2 hover:-translate-y-0.5 transition-transform"
@@ -234,7 +286,7 @@ export default function HeroSection() {
           </div>
 
           {/* Book-style tabs — vertical on md+, read top-to-bottom (rotate-90) */}
-          <div className="hidden md:flex flex-col border-brutalist border-l-0">
+          <div className="hidden md:flex flex-col border-brutalist border-l-0 relative z-20">
             {TABS.map((tab) => {
               const Icon = TAB_ICONS[tab.id];
               return (
@@ -258,6 +310,18 @@ export default function HeroSection() {
                 </button>
               );
             })}
+
+            {/* Language Toggle — same style tab, warm accent color */}
+            <Link
+              to={`?lang=${lang === 'en' ? 'zh' : 'en'}`}
+              preventScrollReset
+              className="border-b-[2.5px] border-r-[2.5px] border-t-0 border-border border-l-0 h-28 w-11 flex items-center justify-center transition-colors bg-highlight text-accent-foreground hover:bg-[hsl(var(--highlight-light))]"
+            >
+              <span className="rotate-90 flex items-center gap-1.5 whitespace-nowrap font-mono text-xs font-bold tracking-widest">
+                <Globe className="w-3.5 h-3.5" />
+                {lang === 'en' ? '中文' : 'EN'}
+              </span>
+            </Link>
             <div className="flex-1 border-r-[2.5px] border-border" />
           </div>
 
@@ -270,7 +334,7 @@ export default function HeroSection() {
                   key={tab.id}
                   onClick={() => handleTabClick(tab.id)}
                   className={`
-                    flex-1 border-r-[2.5px] last:border-r-0 border-border
+                    flex-1 border-r-[2.5px] border-border
                     px-3 py-3 font-mono text-xs font-bold tracking-wider flex items-center justify-center gap-1.5
                     transition-colors
                     ${activeTab === tab.id
@@ -284,6 +348,22 @@ export default function HeroSection() {
                 </button>
               );
             })}
+
+            {/* Direct Language Toggle Button (Mobile - Binder clip top) */}
+            <div className="pl-3 pr-2 py-0 flex items-center relative overflow-visible z-20">
+              <Link
+                to={`?lang=${lang === 'en' ? 'zh' : 'en'}`}
+                preventScrollReset
+                className="relative px-3 py-2 font-mono text-xs font-black tracking-wider flex items-center justify-center gap-1.5 transition-all border-[2.5px] border-foreground bg-foreground text-background shadow-[3px_3px_0px_hsl(var(--highlight))] rounded-t-xl origin-bottom rotate-[8deg] hover:rotate-[2deg] hover:-translate-y-1 hover:bg-highlight hover:text-accent-foreground"
+              >
+                <div className="absolute bottom-[2px] left-1/2 -translate-x-1/2 flex gap-1 opacity-90 transition-colors">
+                  <div className="w-2.5 h-[2.5px] border-[1.5px] border-background group-hover:border-accent-foreground rounded-full" />
+                  <div className="w-2.5 h-[2.5px] border-[1.5px] border-background group-hover:border-accent-foreground rounded-full" />
+                </div>
+                <Globe className="w-3.5 h-3.5 opacity-90 mb-1.5" />
+                <span className="mb-1.5">{lang === 'en' ? '中' : 'EN'}</span>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -300,7 +380,7 @@ export default function HeroSection() {
                 <span className="w-3 h-3 rounded-full bg-muted-foreground/30" />
               </div>
               <span className="font-mono text-xs text-muted-foreground">
-                {activeTab === "guide" ? ".claude/skills/" : activeTab === "contact" ? "the-imprint/" : activeTab === "lang" ? "the-index/" : "~/playbook"}
+                {activeTab === "guide" ? ".claude/skills/" : activeTab === "contact" ? "the-imprint/" : "~/playbook"}
               </span>
             </div>
             <div className="flex-1 overflow-y-auto" style={{ perspective: "1200px" }}>

@@ -1,0 +1,61 @@
+name: 🛠 Submit a Skill
+description: Submit a new accounting automation skill to be included in SkillBooks.
+title: "[Skill Submission] "
+labels: ["skill-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a skill! 🎉
+        Please fill out the form below so we can review your submission.
+
+  - type: input
+    id: skill-name
+    attributes:
+      label: Skill Name
+      description: A short, descriptive name for your skill.
+      placeholder: "e.g. Invoice Extraction"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What does this skill do? How does it help solopreneurs?
+      placeholder: "Describe the skill's purpose, inputs, and outputs..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Which area does this skill belong to?
+      options:
+        - Invoicing
+        - Expenses
+        - Tax
+        - Banking
+        - Reporting
+        - Contracts
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: folder-structure
+    attributes:
+      label: Skill Folder Structure
+      description: "Describe or paste your skill's folder layout (e.g. SKILL.md, scripts/, references/, assets/)."
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any extra context, screenshots, or links?
+    validations:
+      required: false

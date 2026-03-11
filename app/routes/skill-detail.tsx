@@ -2,10 +2,13 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import { Download, Github } from "lucide-react";
-import { Link, useLoaderData, type LoaderFunctionArgs } from "react-router";
+import { Link, useLoaderData, useSearchParams, type LoaderFunctionArgs } from "react-router";
 import { getSkillMarkdown } from "@/data/skills.server";
+import { getTranslations, type Language } from "@/i18n";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
+    const url = new URL(request.url);
+    const lang = url.searchParams.get("lang") === "en" ? "en" : "zh";
     const { skillId } = params;
     if (!skillId) {
         throw new Response("Skill not found", { status: 404 });
@@ -14,7 +17,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     // 核心逻辑：从服务器读取对应的 SKILL.md
     // 在真实环境中，这里可以是通过 GitHub API 读取仓库文件：
     // await fetch(`https://raw.githubusercontent.com/akiru6/accounting-skills/main/${skillId}/SKILL.md`)
-    const markdown = await getSkillMarkdown(skillId);
+    const markdown = await getSkillMarkdown(skillId, lang);
 
     if (!markdown) {
         throw new Response("Skill not found", { status: 404 });
@@ -23,19 +26,25 @@ export async function loader({ params }: LoaderFunctionArgs) {
     // 构造 GitHub 下载链接
     const githubUrl = `https://github.com/akiru6/accounting-skills/tree/main/${skillId}`;
 
-    return { skillId, markdown, githubUrl };
+    return { skillId, markdown, githubUrl, lang };
 }
 
-export function meta({ params }: any) {
+export function meta({ data }: any) {
+    const lang = data?.lang || "zh";
+    const t = getTranslations(lang).skillDetail;
     return [
-        { title: `Skill: ${params.skillId} — SkillBooks` },
-        { name: "description", content: "Learn how to use this accounting automation skill." },
+        { title: `${t.metaTitlePrefix} ${data?.skillId || ''} — SkillBooks` },
+        { name: "description", content: t.metaDescription },
     ];
 }
 
 export default function SkillDetail() {
     const loaderData = useLoaderData<typeof loader>();
-    const { skillId, markdown, githubUrl } = loaderData as { skillId: string, markdown: string, githubUrl: string };
+    const { skillId, markdown, githubUrl } = loaderData as { skillId: string, markdown: string, githubUrl: string, lang: string };
+
+    const [searchParams] = useSearchParams();
+    const lang = (searchParams.get("lang") === "en" ? "en" : "zh") as Language;
+    const t = getTranslations(lang).skillDetail;
 
     return (
         <div className="fixed inset-0 z-50 flex justify-center items-start overflow-y-auto bg-black/60 backdrop-blur-sm p-4 md:p-8 animate-in fade-in duration-300">
@@ -48,10 +57,10 @@ export default function SkillDetail() {
                         PLAYBOOK_DETAIL_VIEW
                     </div>
                     <Link
-                        to="/"
+                        to={searchParams.toString() ? `/?${searchParams.toString()}` : "/"}
                         preventScrollReset={true}
                         className="inline-flex items-center justify-center font-mono text-xl font-bold border-[3px] border-border w-10 h-10 hover:bg-highlight hover:text-highlight-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all bg-card"
-                        title="Close Overlay"
+                        title={t.closeOverlay}
                     >
                         ✕
                     </Link>
@@ -68,13 +77,13 @@ export default function SkillDetail() {
                         <div>
                             <p className="font-mono text-xs text-muted-foreground tracking-widest mb-4 uppercase flex items-center gap-2">
                                 <span className="inline-block w-8 h-[2px] bg-highlight"></span>
-                                ACCOUNTING PLAYBOOK / {skillId}
+                                {t.playbookPrefix} / {skillId}
                             </p>
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-4">
                                 {skillId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                             </h1>
                             <p className="font-mono text-sm text-foreground/80 font-bold bg-muted inline-block px-3 py-1 border-[2px] border-border">
-                                Author: @akiru6 · Community Edition
+                                {t.authorPrefix} @akiru6 · {t.communityEdition}
                             </p>
                         </div>
 
@@ -85,7 +94,7 @@ export default function SkillDetail() {
                                 className="border-brutalist px-8 py-4 font-mono font-bold bg-highlight text-highlight-foreground shadow-brutalist hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-3"
                             >
                                 <Download size={20} strokeWidth={3} />
-                                <span>DOWNLOAD (.ZIP)</span>
+                                <span>{t.downloadZip}</span>
                             </a>
                             {/* View Source Code */}
                             <a
@@ -95,7 +104,7 @@ export default function SkillDetail() {
                                 className="border-[3px] border-border px-8 py-3 font-mono text-sm font-bold bg-secondary hover:bg-muted text-foreground shadow-brutalist hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none transition-all flex items-center justify-center gap-3"
                             >
                                 <Github size={20} strokeWidth={2.5} />
-                                <span>VIEW ON GITHUB</span>
+                                <span>{t.viewOnGithub}</span>
                             </a>
                         </div>
                     </div>
@@ -119,8 +128,8 @@ export default function SkillDetail() {
 
                     {/* 底部 Footer */}
                     <div className="mt-20 pt-8 border-t-[3px] border-border border-dashed flex justify-between items-center text-muted-foreground font-mono text-xs font-bold">
-                        <p className="bg-muted px-2 py-1 border-[2px] border-transparent">© 2026 SkillBooks Playground.</p>
-                        <p className="border-[2px] border-border px-2 py-1">Open Source with ❤️</p>
+                        <p className="bg-muted px-2 py-1 border-[2px] border-transparent">{t.footerCopyright}</p>
+                        <p className="border-[2px] border-border px-2 py-1">{t.footerOpenSource}</p>
                     </div>
                 </div>
             </div>

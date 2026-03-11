@@ -91,6 +91,29 @@ export const translations = {
                 usageLine3: "invoke via your AI agent.",
             },
         },
+        contact: {
+            sectionLabel: "§ The Imprint",
+            heading1: "Want to",
+            headingHighlight: "contribute",
+            heading2: "a skill?",
+            description: "Join our community of solopreneurs building accounting automations together.",
+            submitSkill: "Submit a Skill",
+            email: "Email Us",
+            emailAddress: "hi@skillbooks.dev",
+            socialMedia: "Social Media",
+            platforms: {
+                douyin: "Douyin",
+                xiaohongshu: "Xiaohongshu",
+                wechatVideo: "WeChat Video",
+                bilibili: "Bilibili",
+            },
+            handles: {
+                douyin: "@skillbooks",
+                xiaohongshu: "@skillbooks",
+                wechatVideo: "skillbooks",
+                bilibili: "@skillbooks",
+            },
+        },
         skillsIndex: {
             toc: "TABLE OF CONTENTS",
             title: "SKILLS INDEX",
@@ -112,6 +135,18 @@ export const translations = {
                 REPORTING: "RPT",
                 CONTRACTS: "CTR"
             }
+        },
+        skillDetail: {
+            metaTitlePrefix: "Skill:",
+            metaDescription: "Learn how to use this accounting automation skill.",
+            closeOverlay: "Close Overlay",
+            playbookPrefix: "ACCOUNTING PLAYBOOK",
+            authorPrefix: "Author:",
+            communityEdition: "Community Edition",
+            downloadZip: "DOWNLOAD (.ZIP)",
+            viewOnGithub: "VIEW ON GITHUB",
+            footerCopyright: "© 2026 SkillBooks Playground.",
+            footerOpenSource: "Open Source with ❤️"
         }
     },
     zh: {
@@ -204,6 +239,29 @@ export const translations = {
                 usageLine3: "然后通过 AI 助手调用即可。",
             },
         },
+        contact: {
+            sectionLabel: "§ 联络簿",
+            heading1: "想要",
+            headingHighlight: "贡献",
+            heading2: "一个技能？",
+            description: "加入，与独立创业者一起，共同打造财务自动化生态。",
+            submitSkill: "提交技能",
+            email: "联系邮箱",
+            emailAddress: "hi@skillbooks.dev",
+            socialMedia: "社交媒体",
+            platforms: {
+                douyin: "抖音",
+                xiaohongshu: "小红书",
+                wechatVideo: "微信视频号",
+                bilibili: "B站",
+            },
+            handles: {
+                douyin: "@skillbooks",
+                xiaohongshu: "@skillbooks",
+                wechatVideo: "skillbooks",
+                bilibili: "@skillbooks",
+            },
+        },
         skillsIndex: {
             toc: "目录",
             title: "技能索引",
@@ -225,6 +283,18 @@ export const translations = {
                 REPORTING: "报表分析",
                 CONTRACTS: "合同法务"
             }
+        },
+        skillDetail: {
+            metaTitlePrefix: "技能：",
+            metaDescription: "学习如何使用此财务自动化技能。",
+            closeOverlay: "关闭弹窗",
+            playbookPrefix: "会计技能手册",
+            authorPrefix: "作者：",
+            communityEdition: "社区版",
+            downloadZip: "下载 (.ZIP) 包",
+            viewOnGithub: "在 GITHUB 仓库查看",
+            footerCopyright: "© 2026 SkillBooks Playground.",
+            footerOpenSource: "开源驱动 ❤️"
         }
     }
 };

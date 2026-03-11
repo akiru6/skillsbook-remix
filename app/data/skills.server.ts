@@ -10,9 +10,18 @@ import path from "path";
 // 假设我们现在从上两层目录（workspace根目录）读取对应名称的文件夹
 const WORKSPACE_DIR = path.resolve(process.cwd(), "..");
 
-export async function getSkillMarkdown(skillId: string): Promise<string | null> {
+export async function getSkillMarkdown(skillId: string, lang: string = "zh"): Promise<string | null> {
     try {
-        const filePath = path.join(WORKSPACE_DIR, skillId, "SKILL.md");
+        let filePath = path.join(WORKSPACE_DIR, skillId, `SKILL_${lang}.md`);
+        
+        // If the specific language version doesn't exist (or we're asking for zh which is just SKILL.md by default)
+        // we'll try to fallback to the default SKILL.md
+        try {
+            await fs.access(filePath);
+        } catch {
+            filePath = path.join(WORKSPACE_DIR, skillId, "SKILL.md");
+        }
+
         const content = await fs.readFile(filePath, "utf-8");
         return content;
     } catch (error) {

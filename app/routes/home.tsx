@@ -201,10 +201,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               GitHub
             </a>
             <a
-              href="#"
+              href="mailto:hi@skillbooks.dev"
               className="font-mono text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              Discord
+              Email
             </a>
             <a
               href="#"
